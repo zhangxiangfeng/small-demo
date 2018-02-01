@@ -13,7 +13,7 @@ public class LongEventMain {
 
     public static void main(String[] args) throws Exception {
         //创建缓冲池
-        ExecutorService executor = Executors.newCachedThreadPool();
+        ExecutorService executor = Executors.newFixedThreadPool(12);
         //创建工厂
         LongEventFactory factory = new LongEventFactory();
         //创建bufferSize ,也就是RingBuffer大小，必须是2的N次方
@@ -49,11 +49,13 @@ public class LongEventMain {
         LongEventProducer producer = new LongEventProducer(ringBuffer);
         //LongEventProducerWithTranslator producer = new LongEventProducerWithTranslator(ringBuffer);
         ByteBuffer byteBuffer = ByteBuffer.allocate(8);
-        for (long l = 0; l < 100; l++) {
+        long s = System.currentTimeMillis();
+        for (long l = 0; l < 1000000; l++) {
             byteBuffer.putLong(0, l);
             producer.onData(byteBuffer);
-            Thread.sleep(1000);
         }
+
+        System.out.println("耗时:" + (System.currentTimeMillis() - s));
 
 
         disruptor.shutdown();//关闭 disruptor，方法会堵塞，直至所有的事件都得到处理；
