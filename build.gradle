@@ -1,0 +1,18 @@
+group 'cn.openread.demo'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // https://mvnrepository.com/artifact/com.lmax/disruptor
+    compile group: 'com.lmax', name: 'disruptor', version: '3.3.7'
+
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
