@@ -1,18 +1,26 @@
-package cn.openread.demo.disruptor;
+package cn.openread.demo;
 
+import cn.openread.demo.disruptor.LongEvent;
+import cn.openread.demo.disruptor.LongEventFactory;
+import cn.openread.demo.disruptor.LongEventHandler;
+import cn.openread.demo.disruptor.LongEventProducer;
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.YieldingWaitStrategy;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
 import com.lmax.disruptor.util.DaemonThreadFactory;
+import org.junit.Test;
 
 import java.nio.ByteBuffer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 
-public class LongEventMain {
+public class SimpleTest {
 
-    public static void main(String[] args) throws Exception {
+    @Test
+    public void test() {
+        Long s = System.currentTimeMillis();
         //创建缓冲池
         ExecutorService executor = Executors.newFixedThreadPool(12);
         //创建工厂
@@ -50,19 +58,68 @@ public class LongEventMain {
         LongEventProducer producer = new LongEventProducer(ringBuffer);
         //LongEventProducerWithTranslator producer = new LongEventProducerWithTranslator(ringBuffer);
         ByteBuffer byteBuffer = ByteBuffer.allocate(8);
-        long s = System.currentTimeMillis();
         for (long l = 0; l < 1000000; l++) {
             byteBuffer.putLong(0, l);
             producer.onData(byteBuffer);
         }
 
-        System.out.println("耗时:" + (System.currentTimeMillis() - s));
-
-
         disruptor.shutdown();//关闭 disruptor，方法会堵塞，直至所有的事件都得到处理；
         executor.shutdown();//关闭 disruptor 使用的线程池；如果需要的话，必须手动关闭， disruptor 在 shutdown 时不会自动关闭；
 
+        Long e = System.currentTimeMillis();
+        System.out.println("耗时:" + (e - s));
     }
 
+    /**
+     * java.util.concurrent包下的新类。LinkedBlockingQueue就是其中之一，是一个阻塞的线程安全的队列，底层采用链表实现。
+     * <p>
+     * LinkedBlockingQueue构造的时候若没有指定大小，则默认大小为Integer.MAX_VALUE，当然也可以在构造函数的参数中指定大小。LinkedBlockingQueue不接受null。
+     * <p>
+     * 添加元素的方法有三个：add,put,offer,且这三个元素都是向队列尾部添加元素的意思。
+     * <p>
+     * 区别:
+     * <p>
+     * add方法在添加元素的时候，若超出了度列的长度会直接抛出异常：
+     * <p>
+     * put方法，若向队尾添加元素的时候发现队列已经满了会发生阻塞一直等待空间，以加入元素。
+     * offer方法在添加元素时，如果发现队列已满无法添加的话，会直接返回false。
+     * <p>
+     * 从队列中取出并移除头元素的方法有：poll，remove，take。
+     * poll: 若队列为空，返回null。
+     * <p>
+     * remove:若队列为空，抛出NoSuchElementException异常。
+     * <p>
+     * take:若队列为空，发生阻塞，等待有元素。
+     */
+    @Test
+    public void test2() {
+        Long s = System.currentTimeMillis();
+        LinkedBlockingQueue<LongEvent> queue = new LinkedBlockingQueue<>(1000000);
 
+
+        ((Runnable) () -> {
+            for (int i = 0; i < 1000000; i++) {
+                LongEvent longEvent = new LongEvent();
+                longEvent.setValue(i);
+                queue.offer(longEvent);
+            }
+        }).run();
+
+
+        ((Runnable) () -> {
+            while (true) {
+                LongEvent longEvent = queue.poll();
+                if (longEvent == null) {
+                    Long e = System.currentTimeMillis();
+                    System.out.println("耗时:" + (e - s));
+                    System.exit(0);
+                }
+                System.out.println("消费的数据:" + longEvent.getValue());
+            }
+        }).run();
+
+        Long e = System.currentTimeMillis();
+        System.out.println("耗时:" + (e - s));
+
+    }
 }
