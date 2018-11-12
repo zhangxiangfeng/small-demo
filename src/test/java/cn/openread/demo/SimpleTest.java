@@ -12,12 +12,67 @@ import com.lmax.disruptor.util.DaemonThreadFactory;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class SimpleTest {
+
+    @Test
+    public void test21() throws IOException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+
+        Farther farther = new Farther();
+        farther.sing();
+        System.out.println("=======================");
+        Children children = new Children();
+        children.sing();
+//        farther = children;
+//        farther.sing();
+    }
+
+    static class Farther {
+
+        static {
+            System.out.println("Farther static init");
+        }
+
+        {
+            System.out.println("Farther no static init");
+        }
+
+        public Farther() {
+            System.out.println("Farther  init");
+        }
+
+        public static void dance() {
+            System.out.println("Farther  dance");
+        }
+
+        private void sing() {
+            System.out.println(this.getClass() + " 会 sing");
+        }
+    }
+
+    static class Children extends Farther {
+        static {
+            System.out.println("Children static init");
+        }
+
+        {
+            System.out.println("Children no static init");
+        }
+
+        public Children() {
+            System.out.println("Children  init");
+        }
+
+        private void sing() {
+            System.out.println(this.getClass() + " 会 sing");
+            Farther.dance();
+        }
+    }
 
 
     @Test
