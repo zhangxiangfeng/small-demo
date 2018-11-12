@@ -12,6 +12,10 @@ import com.lmax.disruptor.util.DaemonThreadFactory;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.lang.ref.PhantomReference;
+import java.lang.ref.ReferenceQueue;
+import java.lang.ref.SoftReference;
+import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.ExecutorService;
@@ -19,6 +23,33 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class SimpleTest {
+
+    @Test
+    public void test22111() {
+        //弱引用一定收回
+        WeakReference<Farther> w = new WeakReference<>(new Farther());
+        System.out.println(w.get());
+        System.gc();
+        System.out.println(w.get());
+
+    }
+
+    @Test
+    public void test2221() {
+        WeakReference<String> w = new WeakReference<>(new String("Hello"));
+        System.out.println(w.get());
+        System.gc();
+        System.out.println(w.get());
+        //软引用满了一定收回
+        SoftReference<String> s = new SoftReference<>(new String("Hello"));
+        System.out.println(s.get());
+
+        System.out.println("=================== 虚引用");
+        //GC任何时候都有可能会回收此对象。它唯一的作用就是就是用于追踪，让我们能够在这个对象被回收的时候收到一个通知。
+        ReferenceQueue<String> queue = new ReferenceQueue<>();
+        PhantomReference<String> pr = new PhantomReference<>(new String("Hello"), queue);
+        System.out.println(pr.get());
+    }
 
     @Test
     public void test21() throws IOException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
@@ -33,6 +64,18 @@ public class SimpleTest {
     }
 
     static class Farther {
+        private String name = "farther";
+
+        @Override
+        protected void finalize() throws Throwable {
+            super.finalize();
+            System.out.println("垃圾回收执行");
+        }
+
+        @Override
+        public String toString() {
+            return super.toString() + this.name;
+        }
 
         static {
             System.out.println("Farther static init");
