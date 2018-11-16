@@ -18,11 +18,40 @@ import java.lang.ref.SoftReference;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteBuffer;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class SimpleTest {
+
+    @Test
+    public void test12() throws InterruptedException {
+        long start = System.currentTimeMillis();
+        Codec codec = new Codec();
+        CountDownLatch countDownLatch = new CountDownLatch(100000);
+        AtomicInteger num = new AtomicInteger(0);
+        ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        for (int i = 0; i < 100000; i++) {
+            executorService.execute(() -> {
+                try {
+                    String shortIdUrl = codec.encode("http://files.res.openread.cn/Codec.java");
+                    System.out.println(Thread.currentThread().getName() + " {shortIdUrl} => " + shortIdUrl);
+                    countDownLatch.countDown();
+                    num.compareAndSet(num.get(), num.get() + 1);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        }
+        executorService.shutdown();
+        countDownLatch.await();
+        long end = System.currentTimeMillis();
+        System.out.println("num=" + num);
+        System.out.println("耗时=" + (end - start) + "ms");
+    }
+
 
     @Test
     public void test22111() {
