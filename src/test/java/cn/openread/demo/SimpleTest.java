@@ -30,10 +30,10 @@ public class SimpleTest {
     public void test12() throws InterruptedException {
         long start = System.currentTimeMillis();
         Codec codec = new Codec();
-        CountDownLatch countDownLatch = new CountDownLatch(100000);
+        CountDownLatch countDownLatch = new CountDownLatch(Codec.MAX_NUM);
         AtomicInteger num = new AtomicInteger(0);
         ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-        for (int i = 0; i < 100000; i++) {
+        for (int i = 0; i < Codec.MAX_NUM; i++) {
             executorService.execute(() -> {
                 try {
                     String shortIdUrl = codec.encode("http://files.res.openread.cn/Codec.java");

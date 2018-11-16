@@ -11,7 +11,7 @@ public class Codec {
 
     private static final int DEFAULT_SHORT_ID_LENGTH = 8;
     private static final String SHORT_DOMAIN = "http://t.com/";
-    private static final int MAX_NUM = 100000;
+    public static final int MAX_NUM = 10000000;
     private static final String allChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private volatile static ConcurrentHashMap<String, String> storageIDValueMap = new ConcurrentHashMap<>(16);
 
