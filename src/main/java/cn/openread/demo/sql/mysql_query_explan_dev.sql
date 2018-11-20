@@ -1,10 +1,11 @@
 # 1. 全值匹配
 EXPLAIN SELECT * FROM employees WHERE name= 'LiLei';
 
-EXPLAIN SELECT * FROM employees WHERE name= 'LiLei' AND age = 22;
+EXPLAIN SELECT * FROM employees WHERE name= 'LiLei' order by age;
 
-EXPLAIN SELECT * FROM employees WHERE name= 'LiLei' AND age = 22 AND
-                                      position ='manager';
+EXPLAIN SELECT * FROM employees WHERE name= 'LiLei' AND age = 22;
+EXPLAIN SELECT * FROM employees WHERE name= 'LiLei'  AND
+                                      position ='manager' AND age = 22;
 # 2.最佳左前缀法则
 # 如果索引了多列，要遵守最左前缀法则。指的是查询从索引的最左前列开始并且不跳过索
 # 引中的列。
