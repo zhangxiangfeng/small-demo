@@ -27,6 +27,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class SimpleTest {
 
     @Test
+    public void test13() {
+
+        for (int i = 0; i < 10; i++) {
+            System.out.println();
+
+        }
+    }
+
+    @Test
     public void test12() throws InterruptedException {
         long start = System.currentTimeMillis();
         Codec codec = new Codec();
