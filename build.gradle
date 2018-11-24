@@ -2,10 +2,42 @@ group 'cn.openread.demo'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
+apply plugin: "com.google.protobuf"
 
 sourceCompatibility = 1.8
 
+protobuf {
+    generatedFilesBaseDir = "$projectDir/src/"
+    protoc {
+        //从仓库下载
+        artifact = 'com.google.protobuf:protoc:3.0.0'
+    }
+}
+
+sourceSets {
+    main {
+        proto {
+            // 除了默认的'src/main/proto'目录新增proto文件的方法
+            srcDir 'src/main/resources/proto'
+            include '**/*.protodevel'
+        }
+    }
+}
+
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "gradle.plugin.com.google.protobuf:protobuf-gradle-plugin:0.8.7"
+    }
+}
+
+
 repositories {
+    maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
     mavenCentral()
 }
 
@@ -15,6 +47,12 @@ dependencies {
 // https://mvnrepository.com/artifact/io.netty/netty-all
     compile group: 'io.netty', name: 'netty-all', version: '4.1.31.Final'
 
+    // https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java
+    compile group: 'com.google.protobuf', name: 'protobuf-java', version: '3.6.1'
+// https://mvnrepository.com/artifact/org.jboss.marshalling/jboss-marshalling
+    compile group: 'org.jboss.marshalling', name: 'jboss-marshalling', version: '2.0.6.Final'
+// https://mvnrepository.com/artifact/org.jboss.marshalling/jboss-marshalling-serial
+    compile group: 'org.jboss.marshalling', name: 'jboss-marshalling-serial', version: '2.0.6.Final'
 
     testCompile group: 'junit', name: 'junit', version: '4.+'
 }
