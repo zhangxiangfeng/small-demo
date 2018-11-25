@@ -16,7 +16,7 @@ public class SubmitSwingProgram extends JFrame {
         label = new JLabel("就是一个文本-Simon");
         label.setBackground(new Color(116, 156, 168));
         super.add(label);
-        super.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        super.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         super.setSize(300, 300);
         super.setVisible(true);
     }
